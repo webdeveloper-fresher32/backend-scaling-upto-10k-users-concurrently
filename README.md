@@ -26,24 +26,24 @@ In distributed systems and technical interviews, scaling by simply placing Redis
 
 ---
 
-## 📊 Benchmark Results: Baseline vs. Optimized Production Reality
+## 📊 Benchmark Results: Baseline vs. Production Reality
 
-| Metric | Baseline (Single Core, Naive DB) | Optimized Production Reality (10-Core Cluster, ESR Index, Lean) |
-| :--- | :--- | :--- |
-| **Concurrent Virtual Users (VUs)** | 10,000 VUs (collapsed at 2,000 VUs) | **10,000 VUs Sustained** |
-| **Total Requests Completed** | 198,458 (aborted run) | **1,067,363 requests handled** |
-| **Throughput (RPS)** | ~588 RPS (mostly timeouts) | **2,725 RPS sustained average (peak ~5,450 checks/s)** |
-| **HTTP Error Rate (`http_req_failed`)** | **96.69%** (`dial: i/o timeout`) | **0.00% (0 errors out of 1.06 Million requests)** |
-| **Status 200 Success Rate** | 3.66% passed | **100% passed (1,067,363 / 1,067,363)** |
-| **Median Latency (`med`)** | 5,010 ms | **1.1 ms** |
-| **p95 Latency (`http_req_duration`)** | **7.27 seconds** | **508 milliseconds** (14.3x reduction) |
-| **p99 Latency (`http_req_duration`)** | **8.40 seconds** | **642 milliseconds** (13.1x reduction) |
-| **CPU Utilization** | Single Core at 37% (76% Host Idle) | 10 Cores Active (Node aggregate 148% CPU, k6 74%, Mongo 61%) |
-| **Data Transferred** | ~380 MB | **4.6 GB (12 MB/s sustained)** |
+| Metric | Baseline (Single Core, Naive DB) | Clustered + ESR (Phase 1) | Covered Queries (Final Crown Target) |
+| :--- | :--- | :--- | :--- |
+| **Concurrent Virtual Users (VUs)** | 10,000 VUs (collapsed at 2,000) | 10,000 VUs Sustained | **10,000 VUs Sustained** |
+| **Total Requests Completed** | 198,458 (aborted run) | 1,067,363 requests | **1,124,035 requests handled** |
+| **Throughput (RPS)** | ~588 RPS (mostly timeouts) | 2,725 RPS average | **2,869 RPS sustained (5,738 checks/s)** |
+| **HTTP Error Rate (`http_req_failed`)** | **96.69%** (`dial: i/o timeout`) | 0.00% (0 errors) | **0.00% (0.0006% outlier rate)** |
+| **Status 200 Success Rate** | 3.66% passed | 100% passed | **99.99% passed (1,124,028 / 1,124,035)** |
+| **Median Latency (`med`)** | 5,010 ms | 1.1 ms | **775 microseconds (Sub-Millisecond!)** |
+| **Average Latency (`avg`)** | 5,460 ms | 102.48 ms | **19.74 ms** |
+| **p90 Tail Latency** | 7,020 ms | 425.2 ms | **2.01 ms** |
+| **p95 Latency (`http_req_duration`)** | **7.27 seconds** | 508 ms | **5.43 milliseconds (Threshold Passed!)** |
+| **p99 Latency (`http_req_duration`)** | **8.40 seconds** | 642 ms | **497 milliseconds (Threshold Passed!)** |
 
-### 📸 Proof of Results (Live 10,000 VU Run)
-![k6 Test Success](docs/images/k6-test-success-terminal.jpg)
-*Figure: 1.06 Million requests processed with 0.00% failure rate under 10,000 concurrent Virtual Users.*
+### 📸 Proof of Results (Final 10,000 VU Run with Covered Queries)
+![k6 Test Success](docs/images/final-covered-query-10k-benchmark-success.jpg)
+*Figure: Over 1.12 Million requests processed under 10,000 concurrent Virtual Users with 5.43ms p95 latency and 775µs median latency.*
 
 ---
 
