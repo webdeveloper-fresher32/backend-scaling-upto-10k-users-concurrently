@@ -1,0 +1,42 @@
+# High-Concurrency Node.js Engineering Documentation (10k Users Without Redis)
+
+Welcome to the complete hands-on guide for scaling a Node.js and MongoDB backend to **10,000 concurrent users without Redis**.
+
+## 📚 Documentation Index
+
+1. [Part 1: Clean Architecture & Foundation Setup](file:///Users/ganeshpirikirala/Desktop/backend-scaling-upto-10k-users-concurrently/docs/01-clean-architecture-setup.md)
+   - Layered architecture (Routes $\rightarrow$ Controllers $\rightarrow$ Services $\rightarrow$ Repositories $\rightarrow$ Models).
+   - Resilient MongoDB connection pooling (`minPoolSize`, `maxPoolSize`, `waitQueueTimeoutMS`).
+   - Express 5 centralized async error handling.
+
+2. [Part 2: Domain Modeling & High-Volume Data Seeding](file:///Users/ganeshpirikirala/Desktop/backend-scaling-upto-10k-users-concurrently/docs/02-domain-modeling-and-seeding.md)
+   - Mongoose schemas (`Product`, `Review`, `Order`).
+   - High-throughput bulk seeder inserting 500,000 products and 1,000,000 reviews with memory-safe chunking.
+
+3. [Part 3: Baseline Load Testing with k6 & Bottleneck Discovery](file:///Users/ganeshpirikirala/Desktop/backend-scaling-upto-10k-users-concurrently/docs/03-baseline-k6-load-testing.md)
+   - Setting up k6 on macOS.
+   - Naive unoptimized repository implementation.
+   - Ramp-up load test script ($500 \rightarrow 2,000 \rightarrow 5,000 \rightarrow 10,000$ VUs).
+   - Profiling CPU saturation, COLLSCANs, and event loop lag.
+
+4. [Part 4: Node.js Runtime & OS Concurrency Scaling](file:///Users/ganeshpirikirala/Desktop/backend-scaling-upto-10k-users-concurrently/docs/04-nodejs-runtime-scaling.md)
+   - OS tuning: increasing file descriptor limits (`ulimit -n 65536`).
+   - Multi-process Node.js `cluster` module scaling across all available CPU cores.
+   - Offloading CPU-heavy hashing and crypto tasks to `worker_threads`.
+   - HTTP Keep-Alive tuning and zero-downtime graceful shutdown.
+
+5. [Part 5: MongoDB Deep Optimization (Scaling Without Redis)](file:///Users/ganeshpirikirala/Desktop/backend-scaling-upto-10k-users-concurrently/docs/05-mongodb-optimization-without-redis.md)
+   - Bypassing Mongoose document hydration with `.lean()`.
+   - The **ESR Rule** (Equality $\rightarrow$ Sort $\rightarrow$ Range) for compound indexes.
+   - Index-covered queries with `totalDocsExamined: 0` served directly from RAM.
+   - Sub-pipeline `$lookup` and `$project` query optimization.
+   - Read Preferences (`secondaryPreferred`) and Write Concerns (`w: 1` vs `w: "majority"`).
+
+6. [Part 6: MongoDB Sharding & Horizontal Scale](file:///Users/ganeshpirikirala/Desktop/backend-scaling-upto-10k-users-concurrently/docs/06-database-sharding.md)
+   - Sharding architecture: `mongos`, Config Servers, and Shard replica sets.
+   - Shard key selection criteria: high cardinality, avoiding monotonic keys, targeted vs. scatter-gather queries.
+   - Chunk splits, migrations, and balancing under high load.
+
+7. [Part 7: Final 10K Benchmark & Interview Defense Mastery](file:///Users/ganeshpirikirala/Desktop/backend-scaling-upto-10k-users-concurrently/docs/07-final-10k-benchmark-and-interview-defense.md)
+   - Before vs. After metric comparison table.
+   - Senior engineering interview Q&A cheatsheet covering event loop mechanics, connection pool calculations, Mongoose trade-offs, and sharding strategies.
