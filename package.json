@@ -1,5 +1,5 @@
 {
-  "name": "backend-scaling-upto-10k-users-concurrently",
+  "name": "high-concurrency-nodejs-backend",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
