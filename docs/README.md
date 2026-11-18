@@ -52,5 +52,6 @@ Welcome to the complete hands-on guide for scaling a Node.js and MongoDB backend
    - Chunk splits, migrations, and balancing under high load.
 
 9. [Part 7: Final 10K Benchmark & Interview Defense Mastery](07-final-10k-benchmark-and-interview-defense.md)
-   - Before vs. After metric comparison table.
-   - Senior engineering interview Q&A cheatsheet covering event loop mechanics, connection pool calculations, Mongoose trade-offs, and sharding strategies.
+   - Live benchmark results: 1.06M requests handled with 0.00% error rate under 10k VUs.
+   - Complete 7-phase visual walkthrough from Thunder Client sanity check to cooldown.
+   - Comprehensive Before vs. After comparison table and senior engineering interview Q&A cheatsheet.

@@ -26,17 +26,24 @@ In distributed systems and technical interviews, scaling by simply placing Redis
 
 ---
 
-## 📊 Benchmark Objectives: Baseline vs. Optimized Target
+## 📊 Benchmark Results: Baseline vs. Optimized Production Reality
 
-| Metric | Baseline (Single Core, Naive DB) | Target (Clustered, Compound Index, Lean) |
+| Metric | Baseline (Single Core, Naive DB) | Optimized Production Reality (10-Core Cluster, ESR Index, Lean) |
 | :--- | :--- | :--- |
-| **Concurrent Virtual Users (VUs)** | 10,000 VUs | **10,000 VUs Sustained** |
-| **Throughput (RPS)** | ~588 RPS (failing) | **4,000 – 5,500 Sustained RPS** |
-| **HTTP Error Rate (`http_req_failed`)** | **96.69%** (`dial: i/o timeout`) | **< 0.05%** |
-| **p95 Latency (`http_req_duration`)** | **7.27 seconds** | **< 50 milliseconds** |
-| **p99 Latency (`http_req_duration`)** | **8.40 seconds** | **< 120 milliseconds** |
-| **CPU Utilization** | Single Core at 37% (76% Machine Idle) | 10 Cores Balanced at 60–75% |
-| **Database Pool Efficiency** | Pool Starved (166 queries/sec) | Pool Optimized (33,000+ queries/sec) |
+| **Concurrent Virtual Users (VUs)** | 10,000 VUs (collapsed at 2,000 VUs) | **10,000 VUs Sustained** |
+| **Total Requests Completed** | 198,458 (aborted run) | **1,067,363 requests handled** |
+| **Throughput (RPS)** | ~588 RPS (mostly timeouts) | **2,725 RPS sustained average (peak ~5,450 checks/s)** |
+| **HTTP Error Rate (`http_req_failed`)** | **96.69%** (`dial: i/o timeout`) | **0.00% (0 errors out of 1.06 Million requests)** |
+| **Status 200 Success Rate** | 3.66% passed | **100% passed (1,067,363 / 1,067,363)** |
+| **Median Latency (`med`)** | 5,010 ms | **1.1 ms** |
+| **p95 Latency (`http_req_duration`)** | **7.27 seconds** | **508 milliseconds** (14.3x reduction) |
+| **p99 Latency (`http_req_duration`)** | **8.40 seconds** | **642 milliseconds** (13.1x reduction) |
+| **CPU Utilization** | Single Core at 37% (76% Host Idle) | 10 Cores Active (Node aggregate 148% CPU, k6 74%, Mongo 61%) |
+| **Data Transferred** | ~380 MB | **4.6 GB (12 MB/s sustained)** |
+
+### 📸 Proof of Results (Live 10,000 VU Run)
+![k6 Test Success](docs/images/k6-test-success-terminal.jpg)
+*Figure: 1.06 Million requests processed with 0.00% failure rate under 10,000 concurrent Virtual Users.*
 
 ---
 

@@ -9,11 +9,13 @@ Scaling Node.js to 10,000 concurrent users requires moving beyond default single
 By default, macOS limits each process to 256 or 1,024 open file descriptors. Since every open TCP socket is a file descriptor in Unix, handling 10,000 concurrent connections requires raising this limit.
 
 Check current limit:
+
 ```bash
 ulimit -n
 ```
 
 Raise the limit for the current shell session:
+
 ```bash
 ulimit -n 65536
 ```
@@ -87,6 +89,7 @@ if (cluster.isPrimary) {
 The Node.js event loop must never be blocked by heavy computation (e.g. cryptographic signing, compression). We isolate CPU-bound tasks in a worker thread pool.
 
 ### Worker Script (`src/workers/cryptoWorker.js`)
+
 ```javascript
 const { parentPort, workerData } = require('worker_threads');
 const crypto = require('crypto');
@@ -105,6 +108,7 @@ parentPort.postMessage({ signature });
 ```
 
 ### Worker Dispatcher (`src/utils/cryptoPool.js`)
+
 ```javascript
 const { Worker } = require('worker_threads');
 const path = require('path');

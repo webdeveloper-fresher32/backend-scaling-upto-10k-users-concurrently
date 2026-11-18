@@ -1,18 +1,18 @@
 
-const  mongoose = require ("mongoose");
+const mongoose = require("mongoose");
 
 const orderItemSchema = new mongoose.Schema(
-    {
-        productId : { type : mongoose.Schema.Types.ObjectId , ref: "Product", required: true },
-        quantity : { type : Number , require : true , min : 1 },
-        unitPrice : { type : Number , required : true }
-    },
-    { _id : false }
+  {
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+    quantity: { type: Number, require: true, min: 1 },
+    unitPrice: { type: Number, required: true }
+  },
+  { _id: false }
 )
 
 
-const orderSchema  = new mongoose.Schema(
-   {
+const orderSchema = new mongoose.Schema(
+  {
     userId: { type: String, required: true },
     items: [orderItemSchema],
     totalAmount: { type: Number, required: true },
@@ -26,4 +26,6 @@ const orderSchema  = new mongoose.Schema(
   { timestamps: true }
 )
 
-module.exports = mongoose.model("Order",orderSchema)
+orderSchema.index({ userId: 1, createdAt: -1 })
+
+module.exports = mongoose.model("Order", orderSchema)
