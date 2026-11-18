@@ -7,6 +7,7 @@ Testing scalability with 50 documents will yield deceptive 0ms latencies. To ide
 ## 1. Mongoose Models
 
 ### Product Model (`src/models/product.model.js`)
+
 ```javascript
 const mongoose = require('mongoose');
 
@@ -33,6 +34,7 @@ module.exports = mongoose.model('Product', productSchema);
 ```
 
 ### Review Model (`src/models/review.model.js`)
+
 ```javascript
 const mongoose = require('mongoose');
 
@@ -51,6 +53,7 @@ module.exports = mongoose.model('Review', reviewSchema);
 ```
 
 ### Order Model (`src/models/order.model.js`)
+
 ```javascript
 const mongoose = require('mongoose');
 

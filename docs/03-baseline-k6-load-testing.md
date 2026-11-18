@@ -7,11 +7,13 @@ Before optimizing, we must measure the unoptimized application to identify failu
 ## 1. Installing k6
 
 On macOS (using Homebrew):
+
 ```bash
 brew install k6
 ```
 
 Verify installation:
+
 ```bash
 k6 version
 ```
@@ -23,6 +25,7 @@ k6 version
 To demonstrate real bottlenecks, we start with a standard but unoptimized implementation.
 
 ### Naive Repository (`src/repositories/product.repository.naive.js`)
+
 ```javascript
 const Product = require('../models/product.model');
 
@@ -116,6 +119,7 @@ export default function () {
    ```
 
 ### What Happens to the Unoptimized Server at 2,000+ VUs:
+
 1. **CPU Saturation (Single Core at 100%):** Because `node server.js` runs on 1 core, it cannot process incoming requests fast enough.
 2. **Event Loop Lag Spikes:** Unindexed MongoDB queries hold the event loop waiting, and Mongoose document hydration burns CPU memory cycles.
 3. **Database COLLSCAN:** MongoDB scans 500,000 documents for every incoming query, overloading WiredTiger cache.

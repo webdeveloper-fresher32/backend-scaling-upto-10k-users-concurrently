@@ -1,3 +1,4 @@
+
 # Part 1: Clean Architecture & Foundation Setup
 
 This guide establishes the foundational architecture for scaling a Node.js backend to high concurrency.
@@ -61,13 +62,13 @@ const connectDatabase = async () => {
     // Maintain between minPoolSize and maxPoolSize connections per process
     minPoolSize: 10,
     maxPoolSize: 50, // For multi-process clusters, total connections = maxPoolSize * worker_count
-    
+  
     // Timeout if a connection cannot be acquired from pool within 5 seconds
     waitQueueTimeoutMS: 5000,
-    
+  
     // Close idle sockets after 30 seconds
     maxIdleTimeMS: 30000,
-    
+  
     // Fast fail for network disconnects
     serverSelectionTimeoutMS: 5000,
     socketTimeoutMS: 45000,
