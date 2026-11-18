@@ -33,7 +33,7 @@ const connectDatabase = async () => {
         console.warn("Databse : lost connection to mongoDB");
     })
 
-    mongoose.connect.on("reconnected",()=>{
+    mongoose.connection.on("reconnected",()=>{
         console.log("Database : reconnected to mongoDB")
     })
 }

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const Product = require('../src/models/product.model');
-const Review = require('../src/models/review.model');
-const { connectDatabase } = require('../src/config/database');
+const Product = require('../models/product.model');
+const Review = require('../models/review.model');
+const { connectDatabase } = require('../config/database');
 
 const CATEGORIES = ['Electronics', 'Books', 'Home', 'Apparel', 'Automotive', 'Sports'];
 const BRANDS = ['Sony', 'Apple', 'Samsung', 'Nike', 'Adidas', 'Logitech', 'Anker'];
