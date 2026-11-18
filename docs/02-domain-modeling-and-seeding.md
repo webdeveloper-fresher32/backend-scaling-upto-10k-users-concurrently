@@ -1,13 +1,12 @@
 # Part 2: Domain Modeling & High-Volume Data Seeding
 
-Testing scalability with 50 documents will yield deceptive 0ms latencies. To identify real bottlenecks under 10k concurrent users, the database must contain realistic volume: at least **500,000 products** and **1,000,000 reviews**.
+Testing backend performance against 50 rows in a database gives false positives: queries return in 0ms because the entire dataset fits in CPU L1/L2 cache. To simulate true production load under 10,000 concurrent users, the database must contain realistic volume: **500,000 products** and **1,000,000 reviews**.
 
 ---
 
-## 1. Mongoose Models
+## 1. Domain Schemas
 
-### Product Model (`src/models/product.model.js`)
-
+### A. Product Model (`src/models/product.model.js`)
 ```javascript
 const mongoose = require('mongoose');
 
@@ -33,14 +32,17 @@ const productSchema = new mongoose.Schema(
 module.exports = mongoose.model('Product', productSchema);
 ```
 
-### Review Model (`src/models/review.model.js`)
-
+### B. Review Model (`src/models/review.model.js`)
 ```javascript
 const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema(
   {
-    productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true,
+    },
     userId: { type: String, required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
     comment: { type: String, maxlength: 500 },
@@ -52,8 +54,7 @@ const reviewSchema = new mongoose.Schema(
 module.exports = mongoose.model('Review', reviewSchema);
 ```
 
-### Order Model (`src/models/order.model.js`)
-
+### C. Order Model (`src/models/order.model.js`)
 ```javascript
 const mongoose = require('mongoose');
 
@@ -86,15 +87,15 @@ module.exports = mongoose.model('Order', orderSchema);
 
 ---
 
-## 2. High-Performance Bulk Data Seeder (`scripts/seed.js`)
+## 2. High-Performance Bulk Seeder (`src/scripts/seed.js`)
 
-Inserting 500,000 documents one by one will take hours and crash Node's memory limit. We use `insertMany` with streaming chunks and `ordered: false` for maximum throughput.
+Inserting 500k documents via single `Product.create()` calls would take hours and crash Node's heap. Instead, we use `insertMany` with streaming batches of 5,000 documents and `ordered: false`.
 
 ```javascript
 const mongoose = require('mongoose');
-const Product = require('../src/models/product.model');
-const Review = require('../src/models/review.model');
-const { connectDatabase } = require('../src/config/database');
+const Product = require('../models/product.model');
+const Review = require('../models/review.model');
+const { connectDatabase } = require('../config/database');
 
 const CATEGORIES = ['Electronics', 'Books', 'Home', 'Apparel', 'Automotive', 'Sports'];
 const BRANDS = ['Sony', 'Apple', 'Samsung', 'Nike', 'Adidas', 'Logitech', 'Anker'];
@@ -136,7 +137,7 @@ async function seed() {
     }
 
     const inserted = await Product.insertMany(batch, { ordered: false });
-    // Keep a subset of IDs in memory to reference for reviews
+    // Retain a subset of IDs in memory to reference for reviews
     if (productIds.length < 50000) {
       inserted.forEach((doc) => productIds.push(doc._id));
     }
@@ -148,7 +149,6 @@ async function seed() {
 
   console.log('--- Seeding Reviews ---');
   const reviewStartTime = Date.now();
-  const TOTAL_REVIEWS = productIds.length * REVIEWS_PER_PRODUCT_SAMPLE;
 
   for (let i = 0; i < productIds.length; i += BATCH_SIZE) {
     const reviewBatch = [];
@@ -177,4 +177,30 @@ seed().catch((err) => {
   console.error('Seeding failed:', err);
   process.exit(1);
 });
+```
+
+---
+
+## 3. Running the Seeder & Verifying Count
+
+Execute the seeder:
+```bash
+node src/scripts/seed.js
+```
+
+Verify that 500k documents exist in your collection:
+```bash
+node -e "
+const mongoose = require('mongoose');
+const Product = require('./src/models/product.model');
+mongoose.connect('mongodb://127.0.0.1:27017/scale_10k_db').then(async () => {
+  const count = await Product.countDocuments();
+  console.log('Total Products in DB:', count);
+  process.exit(0);
+});
+"
+```
+Output:
+```text
+Total Products in DB: 500000
 ```
