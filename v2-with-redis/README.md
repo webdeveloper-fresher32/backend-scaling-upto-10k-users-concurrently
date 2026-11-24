@@ -75,6 +75,7 @@ v2-with-redis/
 │   └── util/
 ├── cluster.js                        # Multi-core clustered entry point (Module 5)
 ├── server.js                         # Single-process development server (backlog: 4096)
+├── High-Concurrency-NodeJS-20k-Users-Architecture-Report.pdf # 8-Page Staff-Level Architecture Whitepaper PDF
 └── k6/
     └── catalog-load-test.js          # 20k VU test with discardResponseBodies (Module 6, 7)
 ```

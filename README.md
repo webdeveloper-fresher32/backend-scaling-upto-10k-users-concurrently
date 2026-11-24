@@ -87,6 +87,7 @@ high-concurrency-nodejs-backend/
     ├── .env.example                          # Replica set URI (rs0), Redis config, Port 5002
     ├── cluster.js                            # Clustered runtime with graceful multi-resource shutdown
     ├── server.js                             # Express 5 server (Listen Backlog: 4096)
+    ├── High-Concurrency-NodeJS-20k-Users-Architecture-Report.pdf # 8-Page Staff-Level 20k Architecture Whitepaper PDF
     ├── package.json
     │
     ├── src/
@@ -224,6 +225,9 @@ curl -s -D - -o /dev/null "http://localhost:5002/api/products?category=Electroni
 ## 📚 Complete Documentation Index
 
 - **Phase 1 Guides & Whitepaper:** [v1-without-redis/README.md](v1-without-redis/README.md)
+  - [Phase 1 10k Whitepaper PDF](v1-without-redis/High-Concurrency-NodeJS-10k-Users-Architecture-Report.pdf)
+- **Phase 2 Guides & 20k Whitepaper:** [v2-with-redis/README.md](v2-with-redis/README.md)
+  - 📄 **[Phase 2 20k Two-Tier Caching Whitepaper PDF](v2-with-redis/High-Concurrency-NodeJS-20k-Users-Architecture-Report.pdf)**
 - **Phase 2 Implementation Modules:** [v2-with-redis/docs/README.md](v2-with-redis/docs/README.md)
   - [Module 1: Redis Architecture &amp; Connection](v2-with-redis/docs/01-redis-architecture-and-connection.md)
   - [Module 2: Core Caching &amp; Stampede Prevention](v2-with-redis/docs/02-caching-patterns-and-stampede-prevention.md)

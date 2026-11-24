@@ -6,3 +6,9 @@ node_modules/
 */.DS_Store
 data/
 */data/
+
+# Video Scripts & Content Drafts
+video-scripts/
+*/video-scripts/
+*video-script*
+
