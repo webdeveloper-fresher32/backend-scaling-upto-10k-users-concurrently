@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-// Starting unoptimized baseline: using the naive repository with NO caching!
-const productRepository = require("../repositories/product.repository.naive");
+// 🚀 Optimized Repository: Uses ESR Covered Index + .lean() to bypass hydration
+const productRepository = require("../repositories/product.repository.optimized");
 
 class ProductService {
     async getProducts(filters) {

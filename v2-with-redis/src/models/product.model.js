@@ -19,4 +19,18 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// 🚀 ESR COMPOUND INDEX:
+// 1. Equality: category, isActive
+// 2. Sort & Range: price
+// 3. Covered Query Projection Fields: sku, title, stock, rating
+productSchema.index({
+  category: 1,
+  isActive: 1,
+  price: 1,
+  sku: 1,
+  title: 1,
+  stock: 1,
+  rating: 1,
+});
+
 module.exports = mongoose.model("Product", productSchema);

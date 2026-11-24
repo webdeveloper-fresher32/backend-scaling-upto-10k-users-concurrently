@@ -24,4 +24,9 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Compound index for user order history:
+// 1. Equality: userId
+// 2. Sort: createdAt descending (-1)
+orderSchema.index({ userId: 1, createdAt: -1 });
+
 module.exports = mongoose.model("Order", orderSchema);

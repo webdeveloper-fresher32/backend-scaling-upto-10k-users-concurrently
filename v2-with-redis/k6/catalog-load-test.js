@@ -3,11 +3,11 @@ import { check, sleep } from 'k6';
 
 export const options = {
   stages: [
-    { duration: '30s', target: 500 },    // Warm-up to 500 VUs
-    { duration: '1m', target: 2000 },    // Ramp up to 2,000 VUs
-    { duration: '2m', target: 5000 },    // Stress at 5,000 VUs
-    { duration: '2m', target: 10000 },   // Spike to 10,000 VUs
-    { duration: '1m', target: 0 },       // Cool down
+    { duration: '30s', target: 1000 },   // Warm-up to 1,000 VUs
+    { duration: '1m', target: 5000 },    // Ramp up to 5,000 VUs
+    { duration: '2m', target: 10000 },   // Stress at 10,000 VUs
+    { duration: '2m', target: 15000 },   // 🚀 Peak Target: 15,000 Concurrent VUs!
+    { duration: '1m', target: 0 },       // Graceful cool-down
   ],
   thresholds: {
     // 95% of requests must complete below 300ms

@@ -107,9 +107,18 @@ CACHE_LOCK_TTL=5
 
 ---
 
+## 📊 Empirical Post-Mortems & Benchmark Reports
+
+Before introducing Redis, we empirically benchmarked the database and multi-core scaling limits:
+1. 🚨 **[Baseline Load Test Failure Analysis](baseline-failure-analysis/README.md):** Why the unindexed, single-core backend collapsed at 10k VUs (98.46% error rate, dial: i/o timeout).
+2. 🔬 **[20k Concurrency & Ephemeral Port Exhaustion Report](20k-concurrency-limits-analysis/README.md):** What happens when pushed past single-host limits (macOS 16,383 ephemeral port exhaustion & passive thermal throttling).
+3. 🚀 **[15k Multi-Core Clustered Milestone Report](15k-concurrency-clustering-analysis/README.md):** 1.51 Million requests handled across 10 CPU cores at 3,869 RPS with 1.2ms median latency.
+
+---
+
 ## 📚 Step-by-Step Implementation Guides
 
-Follow the modular guides inside [`docs/`](docs/):
+Follow the 6 modular guides inside [`docs/`](docs/):
 
 1. **[Module 1: Redis Architecture & Resilient Connection](docs/01-redis-architecture-and-connection.md)**
 2. **[Module 2: Core Caching Service & Distributed Stampede Prevention](docs/02-caching-patterns-and-stampede-prevention.md)**

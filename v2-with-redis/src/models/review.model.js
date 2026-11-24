@@ -17,4 +17,7 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+// Index for fast review lookups on product detail page:
+reviewSchema.index({ productId: 1, createdAt: -1 });
+
 module.exports = mongoose.model('Review', reviewSchema);
