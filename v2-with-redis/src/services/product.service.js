@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 // 🚀 Optimized Repository: Uses ESR Covered Index + .lean() to bypass hydration
 const productRepository = require("../repositories/product.repository.optimized");
+const cacheService = require("./cache.service");
 
 class ProductService {
     async getProducts(filters) {
@@ -12,13 +13,19 @@ class ProductService {
         const parsedPage = page !== undefined ? Math.max(1, Number(page)) : 1;
         const parsedLimit = limit !== undefined ? Math.min(100, Math.max(1, Number(limit))) : 20;
 
-        return await productRepository.findByCategory(
-            category,
-            parsedMinPrice,
-            parsedMaxPrice,
-            parsedPage,
-            parsedLimit
-        );
+        // Deterministic cache key matching query parameters
+        const cacheKey = `products:cat:${category}:min:${parsedMinPrice}:max:${parsedMaxPrice}:page:${parsedPage}:limit:${parsedLimit}`;
+        const TTL_SECONDS = 300; // 5 minutes cache with jitter
+
+        return await cacheService.getOrSetWithLock(cacheKey, TTL_SECONDS, async () => {
+            return await productRepository.findByCategory(
+                category,
+                parsedMinPrice,
+                parsedMaxPrice,
+                parsedPage,
+                parsedLimit
+            );
+        });
     }
 
     async getProductWithReviews(productId, limit = 5) {
@@ -29,15 +36,20 @@ class ProductService {
         }
 
         const parsedLimit = limit !== undefined ? Math.min(20, Math.max(1, Number(limit))) : 5;
-        const results = await productRepository.getProductWithRecentReviews(productId, parsedLimit);
+        const cacheKey = `product:id:${productId}:reviews:${parsedLimit}`;
+        const TTL_SECONDS = 600; // 10 minutes cache with jitter
 
-        if (!results || results.length === 0) {
-            const error = new Error('Product not found');
-            error.statusCode = 404;
-            throw error;
-        }
+        return await cacheService.getOrSetWithLock(cacheKey, TTL_SECONDS, async () => {
+            const results = await productRepository.getProductWithRecentReviews(productId, parsedLimit);
 
-        return results[0];
+            if (!results || results.length === 0) {
+                const error = new Error('Product not found');
+                error.statusCode = 404;
+                throw error;
+            }
+
+            return results[0];
+        });
     }
 }
 

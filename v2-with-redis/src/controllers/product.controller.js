@@ -1,10 +1,8 @@
-const productServie = require("../services/product.service");
+const productService = require("../services/product.service");
 
-
-class ProductContoller {
+class ProductController {
     async getProducts(req, res, next) {
         try {
-
             const { category, minPrice, maxPrice, page, limit } = req.query;
 
             if (!category) {
@@ -13,25 +11,26 @@ class ProductContoller {
                     error: {
                         message: `Query Parameter : "Category" is required `
                     }
-                })
+                });
             }
 
-            const products = await productServie.getProducts({
+            const { data: products, isHit } = await productService.getProducts({
                 category,
                 minPrice,
                 maxPrice,
                 page,
                 limit
-            })
+            });
 
+            res.setHeader('X-Cache', isHit ? 'HIT' : 'MISS');
             res.status(200).json({
                 success: true,
                 count: products.length,
                 data: products
-            })
+            });
 
         } catch (error) {
-            next(error)
+            next(error);
         }
     }
 
@@ -40,8 +39,9 @@ class ProductContoller {
             const { id } = req.params;
             const { limit } = req.query;
 
-            const product = await productServie.getProductWithReviews(id, limit);
+            const { data: product, isHit } = await productService.getProductWithReviews(id, limit);
 
+            res.setHeader('X-Cache', isHit ? 'HIT' : 'MISS');
             res.status(200).json({
                 success: true,
                 data: product,
@@ -50,7 +50,6 @@ class ProductContoller {
             next(error);
         }
     }
-
 }
 
-module.exports = new ProductContoller();
+module.exports = new ProductController();

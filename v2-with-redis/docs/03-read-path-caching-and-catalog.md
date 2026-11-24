@@ -195,5 +195,14 @@ redis-cli
 1) "products:cat:Electronics:min:0:max:100000:page:1:limit:20"
 
 127.0.0.1:6379> TTL "products:cat:Electronics:min:0:max:100000:page:1:limit:20"
-(integer) 134   <-- Notice jitter applied (base 120 + 14s jitter)
+(integer) 283   <-- Notice jitter applied (base 300s + jitter minus elapsed time)
 ```
+
+### Visual Verification via Redis Live (VS Code Extension):
+![Redis Live GUI Verification](images/18-redis-live-gui-cache-hit-verification.jpg)
+
+As confirmed in the VS Code Redis Live panel:
+1. Basic read/write connectivity verified with `SET test "high concurrency"` and `GET test`.
+2. A single `curl http://localhost:5002/api/products?category=Electronics&page=1` populated the deterministic key `products:cat:Electronics:min:0:max:1000000:page:1:limit:20`.
+3. Running `TTL` confirmed `283` seconds active countdown with microsecond query latency.
+4. The bottom panel visually enumerates active memory keys, values, and expiration timers.
