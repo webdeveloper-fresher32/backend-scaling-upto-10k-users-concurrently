@@ -1,15 +1,13 @@
-
 const mongoose = require("mongoose");
 
 const orderItemSchema = new mongoose.Schema(
   {
     productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-    quantity: { type: Number, require: true, min: 1 },
+    quantity: { type: Number, required: true, min: 1 },
     unitPrice: { type: Number, required: true }
   },
   { _id: false }
-)
-
+);
 
 const orderSchema = new mongoose.Schema(
   {
@@ -24,8 +22,6 @@ const orderSchema = new mongoose.Schema(
     paymentSignature: { type: String },
   },
   { timestamps: true }
-)
+);
 
-orderSchema.index({ userId: 1, createdAt: -1 })
-
-module.exports = mongoose.model("Order", orderSchema)
+module.exports = mongoose.model("Order", orderSchema);
