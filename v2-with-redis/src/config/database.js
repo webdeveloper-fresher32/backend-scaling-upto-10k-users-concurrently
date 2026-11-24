@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 
 const connectDatabase = async () => {
-    const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/scale_10k_db';
+    const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/scale_db_with_redis';
 
     const options = {
         // Maintain between minPoolSize and maxPoolSize connections per process
