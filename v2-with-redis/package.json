@@ -1,0 +1,26 @@
+{
+  "name": "high-concurrency-nodejs-backend-v2",
+  "version": "2.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:cluster": "node cluster.js",
+    "test:k6": "k6 run k6/catalog-load-test.js"
+  },
+  "keywords": [
+    "nodejs",
+    "redis",
+    "mongodb",
+    "high-concurrency",
+    "k6"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "High-concurrency Node.js backend scaled to 10k users with distributed Redis caching",
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "ioredis": "^5.4.1",
+    "mongoose": "^9.12.2"
+  }
+}

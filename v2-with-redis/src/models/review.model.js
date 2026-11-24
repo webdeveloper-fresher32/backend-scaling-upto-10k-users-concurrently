@@ -1,0 +1,22 @@
+const mongoose = require('mongoose');
+
+const reviewSchema = new mongoose.Schema(
+  {
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true,
+    },
+    userId: { type: String, required: true },
+    rating: { type: Number, required: true, min: 1, max: 5 },
+    comment: { type: String, maxlength: 500 },
+    isVerifiedPurchase: { type: Boolean, default: false },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+reviewSchema.index({ productId: 1, createdAt: -1 })
+
+module.exports = mongoose.model('Review', reviewSchema);
