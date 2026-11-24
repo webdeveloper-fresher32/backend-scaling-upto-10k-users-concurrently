@@ -14,8 +14,13 @@ if (cluster.isPrimary) {
 
   // Handle worker failures with automatic resurrection
   cluster.on('exit', (worker, code, signal) => {
-    console.warn(`[Master] Worker ${worker.process.pid} died (${signal || code}). Resurrecting worker...`);
-    cluster.fork();
+    // Only resurrect if the worker died unexpectedly (crash), not on clean shutdown
+    if (signal !== 'SIGTERM' && signal !== 'SIGINT' && code !== 0) {
+      console.warn(`[Master] Worker ${worker.process.pid} died (${signal || code}). Resurrecting worker...`);
+      cluster.fork();
+    } else {
+      console.log(`[Master] Worker ${worker.process.pid} exited cleanly.`);
+    }
   });
 
   // Master graceful shutdown: forward signals to all workers

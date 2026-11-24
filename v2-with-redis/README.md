@@ -54,28 +54,29 @@ v2-with-redis/
 │   ├── 03-read-path-caching-and-catalog.md
 │   ├── 04-write-path-cache-invalidation.md
 │   ├── 05-multi-core-clustering-with-redis.md
-│   └── 06-k6-load-testing-and-benchmarking.md
+│   ├── 06-k6-load-testing-and-benchmarking.md
+│   └── 07-two-tier-l1-l2-caching-and-20k-benchmark.md
 ├── src/                              # Application source code (Module by Module)
 │   ├── config/
 │   │   ├── database.js               # MongoDB connection pool (from v1)
 │   │   └── redis.js                  # Resilient ioredis client (Module 1)
 │   ├── services/
-│   │   ├── cache.service.js          # Cache-Aside, Stampede Lock, TTL Jitter (Module 2)
+│   │   ├── cache.service.js          # Two-Tier L1 RAM + L2 Redis + Stampede Mutex (Module 2, 7)
 │   │   ├── product.service.js        # Read-path caching with diagnostics (Module 3)
 │   │   └── order.service.js          # Write-path with cache invalidation (Module 4)
 │   ├── repositories/
 │   │   ├── product.repository.optimized.js # MongoDB covered index queries (fallback)
 │   │   └── order.repository.js       # Atomic order placement
 │   ├── controllers/
-│   │   ├── product.controller.js     # Includes X-Cache: HIT / MISS headers
+│   │   ├── product.controller.js     # Includes X-Cache: L1 / L2 / MISS headers
 │   │   └── order.controller.js
 │   ├── routes/
 │   ├── models/
 │   └── util/
 ├── cluster.js                        # Multi-core clustered entry point (Module 5)
-├── server.js                         # Single-process development server
+├── server.js                         # Single-process development server (backlog: 4096)
 └── k6/
-    └── redis-catalog-load-test.js    # 10k VU test with cache hit metrics (Module 6)
+    └── catalog-load-test.js          # 20k VU test with discardResponseBodies (Module 6, 7)
 ```
 
 ---
@@ -109,16 +110,18 @@ CACHE_LOCK_TTL=5
 
 ## 📊 Empirical Post-Mortems & Benchmark Reports
 
-All empirical load test analyses, bottleneck postmortems, and Activity Monitor profiling logs are archived in [`bottlenecks/`](bottlenecks/):
-1. 🚨 **[Baseline Load Test Failure Analysis](bottlenecks/baseline-failure-analysis/README.md):** Why the unindexed, single-core backend collapsed at 10k VUs (98.46% error rate, dial: i/o timeout).
-2. 🔬 **[20k Concurrency & Ephemeral Port Exhaustion Report](bottlenecks/20k-concurrency-limits-analysis/README.md):** What happens when pushed past single-host limits (macOS 16,383 ephemeral port exhaustion & passive thermal throttling).
-3. 🚀 **[15k Multi-Core Clustered Milestone Report](bottlenecks/15k-concurrency-clustering-analysis/README.md):** 1.51 Million requests handled across 10 CPU cores at 3,869 RPS with 1.2ms median latency.
+All empirical load test analyses, bottleneck postmortems, and Activity Monitor profiling logs are documented chronologically inside [`bottlenecks/`](bottlenecks/):
+1. 🚨 **[01. Baseline Failure Analysis](bottlenecks/01-baseline-failure-analysis/README.md):** Why the unindexed, single-core backend collapsed at 10k VUs (98.46% error rate, dial: i/o timeout).
+2. 🔬 **[02. 20k Concurrency Limits & Port Exhaustion](bottlenecks/02-20k-concurrency-limits-analysis/README.md):** What happens when pushed past single-host limits (macOS 16,383 ephemeral port exhaustion `EADDRNOTAVAIL`).
+3. 📊 **[03. Pre-Redis 15k Multi-Core Clustered Report](bottlenecks/03-15k-concurrency-clustering-analysis/README.md):** 1.51 Million requests handled across 10 CPU cores at 3,869 RPS with 1.2ms median latency (revealing the 1.03% MongoDB IOPS bottleneck).
+4. 🚀 **[04. 15k Clustered Redis Benchmark Milestone](bottlenecks/04-15k-redis-benchmark/README.md):** **1.96 Million requests handled at 5,000 RPS with 0.00% error rate, 292 µs median latency, and 0.6% MongoDB CPU!**
+5. 🌟 **[05. 20k Two-Tier L1/L2 Clustered Redis Grand Slam](bottlenecks/05-20k-two-tier-redis-benchmark/README.md):** **2.87 Million requests handled at 20,000 Concurrent VUs at 7,319 RPS with 0.00% error rate and 1.42ms p(95) tail latency on a single Mac host!**
 
 ---
 
 ## 📚 Step-by-Step Implementation Guides
 
-Follow the 6 modular guides inside [`docs/`](docs/):
+Follow the 7 modular guides inside [`docs/`](docs/):
 
 1. **[Module 1: Redis Architecture & Resilient Connection](docs/01-redis-architecture-and-connection.md)**
 2. **[Module 2: Core Caching Service & Distributed Stampede Prevention](docs/02-caching-patterns-and-stampede-prevention.md)**
@@ -126,6 +129,7 @@ Follow the 6 modular guides inside [`docs/`](docs/):
 4. **[Module 4: Write-Path Caching & Transactional Invalidation](docs/04-write-path-cache-invalidation.md)**
 5. **[Module 5: Clustered Multi-Core Scaling with Redis](docs/05-multi-core-clustering-with-redis.md)**
 6. **[Module 6: 10,000 VU k6 Load Testing & v1 vs v2 Benchmark](docs/06-k6-load-testing-and-benchmarking.md)**
+7. **[Module 7: Two-Tier L1/L2 Caching & 20,000 VU Benchmark](docs/07-two-tier-l1-l2-caching-and-20k-benchmark.md)**
 
 ---
 

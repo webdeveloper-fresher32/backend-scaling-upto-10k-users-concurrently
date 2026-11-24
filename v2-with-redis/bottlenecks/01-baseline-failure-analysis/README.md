@@ -155,10 +155,11 @@ In the upcoming **v2 implementation modules**, we systematically resolve every s
 ---
 
 ### Implementation Modules
-Proceed to the implementation modules inside [`docs/`](../docs/README.md):
-* **[Module 1: Redis Architecture & Resilient Connection](../docs/01-redis-architecture-and-connection.md)**
-* **[Module 2: Core Caching Service & Distributed Stampede Prevention](../docs/02-caching-patterns-and-stampede-prevention.md)**
-* **[Module 3: Read-Path Caching (Catalog & Product Lookups)](../docs/03-read-path-caching-and-catalog.md)**
-* **[Module 4: Write-Path Caching & Transactional Invalidation](../docs/04-write-path-cache-invalidation.md)**
-* **[Module 5: Clustered Multi-Core Scaling with Redis](../docs/05-multi-core-clustering-with-redis.md)**
-* **[Module 6: 10,000 VU k6 Load Testing & v1 vs v2 Benchmark](../docs/06-k6-load-testing-and-benchmarking.md)**
+Proceed to the implementation modules inside [`docs/`](../../docs/README.md):
+* **[Module 1: Redis Architecture & Resilient Connection](../../docs/01-redis-architecture-and-connection.md)**
+* **[Module 2: Core Caching Service & Distributed Stampede Prevention](../../docs/02-caching-patterns-and-stampede-prevention.md)**
+* **[Module 3: Read-Path Caching (Catalog & Product Lookups)](../../docs/03-read-path-caching-and-catalog.md)**
+* **[Module 4: Write-Path Caching & Transactional Invalidation](../../docs/04-write-path-cache-invalidation.md)**
+* **[Module 5: Clustered Multi-Core Scaling with Redis](../../docs/05-multi-core-clustering-with-redis.md)**
+* **[Module 6: 10,000 VU k6 Load Testing & v1 vs v2 Benchmark](../../docs/06-k6-load-testing-and-benchmarking.md)**
+* **[Module 7: Two-Tier L1/L2 Caching & 20,000 VU Benchmark](../../docs/07-two-tier-l1-l2-caching-and-20k-benchmark.md)**

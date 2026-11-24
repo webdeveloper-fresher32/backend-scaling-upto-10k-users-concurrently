@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const orderRepository = require('../repositories/order.repository');
+const Product = require('../models/product.model');
+const cacheService = require('./cache.service');
 const { runCryptoTask } = require('../util/cryptoPool');
 
 class OrderService {
@@ -19,6 +21,8 @@ class OrderService {
 
         // 2. Validate items structure & calculate total
         let calculatedTotal = 0;
+        const categoriesToInvalidate = new Set();
+
         for (const item of items) {
             if (!item.productId || !mongoose.Types.ObjectId.isValid(item.productId)) {
                 const error = new Error('Invalid productId in order item');
@@ -44,7 +48,27 @@ class OrderService {
 
         const paymentSignature = await runCryptoTask(payloadToSign);
 
-        // 4. Persist Order to Database
+        // 4. Atomic Inventory Reduction in MongoDB
+        for (const item of items) {
+            const updateResult = await Product.updateOne(
+                { _id: item.productId, stock: { $gte: item.quantity } },
+                { $inc: { stock: -item.quantity } }
+            );
+
+            if (updateResult.matchedCount === 0) {
+                const error = new Error(`Insufficient stock or invalid product for ID ${item.productId}`);
+                error.statusCode = 409;
+                throw error;
+            }
+
+            // Fetch product category for targeted cache invalidation
+            const prod = await Product.findById(item.productId).select('category').lean();
+            if (prod && prod.category) {
+                categoriesToInvalidate.add(prod.category);
+            }
+        }
+
+        // 5. Persist Order to Database
         const orderData = {
             userId,
             items,
@@ -53,7 +77,24 @@ class OrderService {
             paymentSignature,
         };
 
-        return await orderRepository.createOrder(orderData);
+        const createdOrder = await orderRepository.createOrder(orderData);
+
+        // 6. TRANSACTIONAL CACHE INVALIDATION
+        // Step A: Invalidate product detail keys immediately
+        for (const item of items) {
+            const productPattern = `product:id:${item.productId}*`;
+            await cacheService.delByPattern(productPattern);
+        }
+
+        // Step B: Asynchronously invalidate affected catalog listings using non-blocking SCAN
+        for (const category of categoriesToInvalidate) {
+            const catalogPattern = `products:cat:${category}*`;
+            cacheService.delByPattern(catalogPattern).catch((err) => {
+                console.warn(`[OrderService] Async catalog cache eviction failed for "${catalogPattern}":`, err.message);
+            });
+        }
+
+        return createdOrder;
     }
 
     async getUserOrders(userId, limit = 10) {

@@ -14,7 +14,7 @@ class ProductController {
                 });
             }
 
-            const { data: products, isHit } = await productService.getProducts({
+            const { data: products, isHit, tier } = await productService.getProducts({
                 category,
                 minPrice,
                 maxPrice,
@@ -22,7 +22,8 @@ class ProductController {
                 limit
             });
 
-            res.setHeader('X-Cache', isHit ? 'HIT' : 'MISS');
+            // Diagnostic header: L1 (Memory 1µs), L2 (Redis 0.2ms), or MISS (DB)
+            res.setHeader('X-Cache', isHit ? (tier || 'HIT') : 'MISS');
             res.status(200).json({
                 success: true,
                 count: products.length,
@@ -39,9 +40,9 @@ class ProductController {
             const { id } = req.params;
             const { limit } = req.query;
 
-            const { data: product, isHit } = await productService.getProductWithReviews(id, limit);
+            const { data: product, isHit, tier } = await productService.getProductWithReviews(id, limit);
 
-            res.setHeader('X-Cache', isHit ? 'HIT' : 'MISS');
+            res.setHeader('X-Cache', isHit ? (tier || 'HIT') : 'MISS');
             res.status(200).json({
                 success: true,
                 data: product,

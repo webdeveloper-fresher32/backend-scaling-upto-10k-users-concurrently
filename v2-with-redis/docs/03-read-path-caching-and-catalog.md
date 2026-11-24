@@ -206,3 +206,46 @@ As confirmed in the VS Code Redis Live panel:
 2. A single `curl http://localhost:5002/api/products?category=Electronics&page=1` populated the deterministic key `products:cat:Electronics:min:0:max:1000000:page:1:limit:20`.
 3. Running `TTL` confirmed `283` seconds active countdown with microsecond query latency.
 4. The bottom panel visually enumerates active memory keys, values, and expiration timers.
+
+### Visual Verification via Chrome DevTools Network Inspector:
+![Chrome DevTools Cache Hit Verification](images/19-chrome-devtools-cache-hit-verification.jpg)
+
+As verified in Chrome DevTools:
+- **Request URL**: `http://localhost:5002/api/products?category=Electronics&page=10`
+- **Response Headers**: `X-Cache: HIT` returned directly by the controller.
+- **Payload**: Full JSON payload served in sub-millisecond RAM roundtrip.
+- **Zero DB Load**: MongoDB WiredTiger engine was completely bypassed.
+
+---
+
+## 5. Advanced Evolution: Two-Tier L1 (In-Memory) + L2 (Redis) Caching
+
+Under extreme concurrency (15,000 to 20,000 VUs), even Redis encounters loopback socket contention if thousands of concurrent connections hit `127.0.0.1:6379` every millisecond.
+
+To eliminate TCP loopback overhead and V8 JSON serialization churn, `CacheService` was upgraded to a **Two-Tier Cache**:
+
+```
+                         Incoming Request
+                                │
+                                ▼
+                   ┌───────────────────────────┐
+                   │ L1 In-Memory Cache (RAM)  │ ──▶ HIT: 0.001 ms (1µs, No Network!)
+                   └────────────┬──────────────┘
+                                │ MISS (< 1%)
+                                ▼
+                   ┌───────────────────────────┐
+                   │ L2 Distributed Redis      │ ──▶ HIT: 0.2 ms (Populates L1)
+                   └────────────┬──────────────┘
+                                │ MISS (< 0.01%)
+                                ▼
+                   ┌───────────────────────────┐
+                   │ L3 MongoDB Replica Set    │ ──▶ 2.0 ms (Populates L2 & L1)
+                   └───────────────────────────┘
+```
+
+### Response Header Observability:
+The controller outputs exact diagnostic tiers:
+- `X-Cache: L1` ➔ Instant in-process memory hit (0.001 ms)
+- `X-Cache: L2` ➔ Centralized Redis cache hit (0.2 ms)
+- `X-Cache: MISS` ➔ Database query executed on MongoDB replica
+

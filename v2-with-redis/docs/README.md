@@ -19,7 +19,7 @@ In **v2**, we integrate Redis to unlock **ultra-low sub-millisecond latencies (<
 
 ## 📚 Module-by-Module Implementation Roadmap
 
-Follow these 6 comprehensive guides in order:
+Follow these 7 comprehensive guides in order:
 
 | Module | Title | Core Focus | Files Built / Modified |
 | :--- | :--- | :--- | :--- |
@@ -29,6 +29,7 @@ Follow these 6 comprehensive guides in order:
 | **[Module 4](04-write-path-cache-invalidation.md)** | **Write-Path Caching & Invalidation** | Cache Invalidation vs Write-Through, transactional order placement, stock eviction | `src/services/order.service.js`, `src/repositories/order.repository.js` |
 | **[Module 5](05-multi-core-clustering-with-redis.md)** | **Clustered Multi-Core Runtime with Redis** | Sharing Redis across 10 worker processes, connection pooling multiplier, graceful shutdown | `cluster.js`, `server.js` |
 | **[Module 6](06-k6-load-testing-and-benchmarking.md)** | **10,000 VU k6 Load Testing & v1 vs v2 Comparison** | Running k6 stress tests, measuring Cache Hit Ratio, p95/p99 comparisons vs v1 | `k6/catalog-load-test.js` |
+| **[Module 7](07-two-tier-l1-l2-caching-and-20k-benchmark.md)** | **Two-Tier L1/L2 Caching & 20,000 VU Benchmark** | In-process V8 heap L1 cache, kernel backlog expansion, 20k VUs @ 7,319 RPS, 1.42ms p95 | `src/services/cache.service.js`, `server.js`, `k6/catalog-load-test.js` |
 
 ---
 

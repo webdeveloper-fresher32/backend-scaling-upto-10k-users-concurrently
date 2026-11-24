@@ -10,6 +10,10 @@ router.get("/", (req, res, next) => {
     productController.getProducts(req, res, next)
 });
 
+router.get("/:id", (req, res, next) => {
+    productController.getProductReviews(req, res, next);
+});
+
 router.get("/:id/reviews", (req, res, next) => {
     productController.getProductReviews(req, res, next);
 });
