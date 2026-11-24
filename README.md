@@ -9,13 +9,17 @@ An end-to-end engineering benchmark and architecture repository demonstrating ho
 ```
 high-concurrency-nodejs-backend/
 ├── v1-without-redis/    # Phase 1: Scaling to 10k VUs with Pure Database & Runtime Engineering (NO Redis)
+│   ├── .env             # Port 5001, MongoDB URI
 │   ├── cluster.js       # Multi-core clustering (10 CPU cores)
 │   ├── src/             # Clean Architecture (ESR Compound Index, .lean(), Covered Queries, Worker Threads)
 │   ├── docs/            # 9 comprehensive guides & post-mortems + whitepaper PDF
-│   └── k6/              # Load testing scripts (10,000 VUs benchmark)
+│   ├── k6/              # Load testing scripts (10,000 VUs benchmark)
+│   └── README.md        # Full v1 Architecture & Benchmark Guide
 │
 └── v2-with-redis/       # Phase 2: Ultra High-Throughput with Distributed Redis Caching
-    ├── (In Progress)    # Cache-Aside, Invalidation, Stampede Protection, Redis Connection Pooling
+    ├── .env             # Port 5002, Redis Host/Port, Cache TTLs
+    ├── docs/            # 6 module-by-module implementation guides
+    └── README.md        # Full v2 Architecture & Implementation Roadmap
 ```
 
 ---
@@ -25,6 +29,7 @@ high-concurrency-nodejs-backend/
 | Dimension | v1 (Without Redis) | v2 (With Redis) |
 | :--- | :--- | :--- |
 | **Primary Data Store** | MongoDB (WiredTiger B-Trees) | MongoDB + Redis In-Memory Store |
+| **Server Port** | `5001` | `5002` |
 | **Concurrency Milestone** | **10,000 VUs Sustained** | **10,000+ VUs Ultra-Low Latency** |
 | **Total Requests Tested** | 1,124,035 requests | Target: > 2,000,000 requests |
 | **HTTP Error Rate** | **0.00%** | Target: **0.00%** |
@@ -35,7 +40,9 @@ high-concurrency-nodejs-backend/
 
 ---
 
-## 📁 Exploring the Codebase
+## 📁 Quick Links
 
-- Read the full pure-database scaling whitepaper: [v1-without-redis/README.md](v1-without-redis/README.md)
-- Download the complete technical report: [v1-without-redis/High-Concurrency-NodeJS-10k-Users-Architecture-Report.pdf](v1-without-redis/High-Concurrency-NodeJS-10k-Users-Architecture-Report.pdf)
+- **Phase 1 Guide:** [v1-without-redis/README.md](v1-without-redis/README.md)
+- **Phase 1 Whitepaper PDF:** [v1-without-redis/High-Concurrency-NodeJS-10k-Users-Architecture-Report.pdf](v1-without-redis/High-Concurrency-NodeJS-10k-Users-Architecture-Report.pdf)
+- **Phase 2 Guide:** [v2-with-redis/README.md](v2-with-redis/README.md)
+- **Phase 2 Implementation Modules:** [v2-with-redis/docs/README.md](v2-with-redis/docs/README.md)
